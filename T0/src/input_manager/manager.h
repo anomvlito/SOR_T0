@@ -23,3 +23,4 @@
 
 char **read_user_input();
 void free_user_input(char **input);
+void hello(char *string1);

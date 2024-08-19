@@ -2,7 +2,7 @@
 #include <stdio.h>  // FILE, fopen, fclose, etc.
 #include <string.h> // strtok, strcpy, etc.
 #include <stdlib.h> // malloc, calloc, free, etc.
-
+#include <stdbool.h>
 // Import the header file of this module, because it has the constant definitions
 #include "manager.h"
 
@@ -54,4 +54,14 @@ void free_user_input(char **input)
     free(input[i]);
   }
   free(input);
+}
+
+static bool string_equals(char *string1, char *string2) {
+  return !strcmp(string1, string2);
+}
+
+void hello(char *string1) {
+  if (string_equals(string1, "hello")){
+    printf("Hello World!\n");
+  }
 }
