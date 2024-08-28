@@ -1,11 +1,4 @@
-// Import used global libraries
-#include <stdio.h>  // FILE, fopen, fclose, etc.
-#include <string.h> // strtok, strcpy, etc.
-#include <stdlib.h> // malloc, calloc, free, etc.
-#include <stdbool.h>
-// Import the header file of this module, because it has the constant definitions
 #include "manager.h"
-
 /*
  * Splits a string "str" by a separator "sep", returns an array with the
  * resulting strings. Equivalent to Python's str.split(sep).
@@ -56,12 +49,50 @@ void free_user_input(char **input)
   free(input);
 }
 
-static bool string_equals(char *string1, char *string2) {
-  return !strcmp(string1, string2);
+
+void hello() {
+  //https://www.geeksforgeeks.org/fork-system-call/ 
+  pid_t pid = fork();
+  if(pid<0) 
+  { 
+    perror("fork fail"); 
+    exit(1); 
+  }
+  else if ( pid == 0) {
+    printf("Hello World!\n");
+  }
+  // else {
+  //   printf("Hello World p0!\n");
+  // }
 }
 
-void hello(char *string1) {
-  if (string_equals(string1, "hello")){
-    printf("Hello World!\n");
+//https://www.geeksforgeeks.org/c-program-to-check-whether-a-number-is-prime-or-not/
+void isPrime(char* input) {
+  pid_t pid = fork();
+
+  if ( pid == 0) {
+    // If number is less than or equal to 1, it is not prime
+    int N = atoi(input);
+    bool result = true;
+    if (N <= 1) {
+        result = false;
+    }
+
+    // Check for divisors from 2 to N/2
+    for (int i = 2; i < N / 2; i++) {
+        // If N is divisible by any number in this range, it
+        // is not prime
+        if (N % i == 0) {
+            result = false;
+        }
+    }
+    // If no divisors are found, it is prime
+    if (result == true){
+      printf("%s is prime\n", input);
+    }
+    else{
+      printf("%s is not prime\n", input);
+    }
+    
   }
 }
