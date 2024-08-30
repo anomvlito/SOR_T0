@@ -8,23 +8,25 @@
 // 2 se interpretara como WAITING
 // 3 se interpretara como FINISHED
 
-typedef enum { RUNNING, READY, WAITING, FINISHED } status_t;
+typedef enum { EJECUTANDO, LISTO, ESPERANDO, TERMINADO } status_t;
 
 struct process {
   char nombre_proceso[32];
   pid_t pid;
   status_t estado;
   int tiempo_inicio;
-  int tiempo_espera;
+  int iniciar_tiempo_espera;
   int tiempo_retorno;
-  struct process *procesos_hijos;
   struct process *proceso_padre;
+  struct process *procesos_hijos;
+  struct process *siguiente_hermano;
 } Process;
 
-void crear_proceso(struct Proceso *p, char *nombre_proceso, status_t estado,
-                   int tiempo_inicio, int tiempo_espera,
-                   int tiempo_retorno Process *procesos_hijos,
-                   Process *proceso_padre);
+void crear_proceso(struct Process *p, char *nombre_proceso, status_t estado,
+                   int tiempo_inicio, int iniciar_tiempo_espera,
+                   int tiempo_retorno, struct Process *procesos_hijos,
+                   struct Process *proceso_padre,
+                   struct Process *siguiente_hermano);
 
 void matar_proceso(struct Proceso *p);
 
