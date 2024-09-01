@@ -18,24 +18,6 @@ void crear_proceso(struct Proceso *p, char *nombre_proceso, status_t estado,
   p->siguiente_hermano = siguiente_hermano;
 }
 
-void wait_process(struct Process *p, double actual_time) {
-  // Verificamos que el proceso este en estado RUNNING
-  // Si no esta en estado RUNNING, no se puede cambiar a WAITING
-  if (p->status != RUNNING) {
-    printf(
-        "El proceso %s no se puede esperar porque no esta en estado RUNNING\n",
-        p->name);
-    exit(1);
-  } else {
-    kill(p->pid, SIGSTOP);
-    p->status = WAITING;
-    p->iniciar_tiempo_espera = actual_time;
-    p->init_time = actual_time;
-    // p->init_time = (int)actual_time;  si necesitamos el tiempo con más
-    // precision usamos  (int)actual_time;
-  }
-}
-
 void esperar_proceso(struct Proceso *p, double actual_time) {
   // Verificamos que el proceso este en estado EJECUTANDO
   // Si no esta en estado RUNNING, no se puede cambiar a WAITING
@@ -49,10 +31,12 @@ void esperar_proceso(struct Proceso *p, double actual_time) {
     // Por ejemplo, puedes usar la función free() para liberar la memoria
     // asignada al proceso
     kill(p->pid, SIGSTOP);
-    p->estado = WAITING;
-    p->star_time_wait = actual_time;
-    p->tiempo_inicio = (int)actual_time;
+    p->estado = ESPERANDO;
+    p->iniciar_tiempo_espera = actual_time;
+    p->init_time = (int)actual_time;
   }
+
+  // typedef enum { EJECUTANDO, LISTO, ESPERANDO, TERMINADO } status_t;
 }
 
 void matar_proceso(struct Proceso *p) { free(p); }

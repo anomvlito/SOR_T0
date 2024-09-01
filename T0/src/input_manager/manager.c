@@ -89,6 +89,16 @@ void isPrime(char *input) {
   } else
 }
 
+// comentario de discussions :
+// En el comando lrlist, no tienen que crear un proceso hijo solo tiene que
+// imprimir los procesos que se están ejecutando o terminaron de ejecutar para
+// ello puedes usar array o linked list o cualquier estructura que manejes. Al
+// final ese comando es del programa principal lrsh.
+
+// creo que lo mejor es que los procesos se guarden en una lista enlazada del
+// struct del queue de la cola con prioiridad, y que se vayan agregando a la
+// lista de procesos en ejecución algunos procesos van a tomar más de 1 segundo.
+
 void lrlist(struct process *process_list) {
   struct process *current = process_list;
 
@@ -111,3 +121,7 @@ void lrlist(struct process *process_list) {
     current = current->siguiente_hermano;
   }
 }
+
+// cuando id de fork es -1 es porque no se pudo crear el proceso hijo
+// cuando id de fork es 0 es porque es el proceso hijo
+// cuando id de fork es > 0 es porque es el proceso padre

@@ -12,9 +12,13 @@ int main(int argc, char const *argv[]) {
 
   /* Construcción de las estructuras */
 
-  char **input = read_user_input();
 
-  if (string_equals(input[0], "hello")) {
+  while (algo != NULL) {
+
+    char **input = read_user_input();
+
+
+    if (string_equals(input[0], "hello")) {
     hello();
   }
 
@@ -28,6 +32,16 @@ int main(int argc, char const *argv[]) {
 
   else if (string_equals(input[0], "irexcec")) {
 
+    int argc = atoi(input[1]);  
+
+    char **argv = malloc(sizeof(char *) * (argc + 2)); // + 1 para tambien guardar el nombre del path + un NULL al final
+    argv[0] = input[4];
+    for (int j = 0; j < 3; ++j)
+    {
+      argv[j + 1] = input[6 + j];
+    }
+    argv[argc + 1] = NULL;
+
   }
 
   else if (string_equals(input[0], "irlist")) {
@@ -35,4 +49,12 @@ int main(int argc, char const *argv[]) {
   }
 
   free_user_input(input);
+
+
+
+   
+  }
+  
+
+  
 }
