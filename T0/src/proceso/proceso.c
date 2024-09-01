@@ -8,6 +8,7 @@ void crear_proceso(struct Proceso *p, char *nombre_proceso, status_t estado,
                    int tiempo_retorno, struct Proceso *procesos_hijos,
                    struct Proceso *proceso_padre,
                    struct Proceso *siguiente_hermano) {
+
   strcpy(p->nombre_proceso, nombre_proceso);
   p->estado = EJECUTANDO;
   p->tiempo_inicio = tiempo_inicio;
@@ -39,7 +40,28 @@ void esperar_proceso(struct Proceso *p, double actual_time) {
   // typedef enum { EJECUTANDO, LISTO, ESPERANDO, TERMINADO } status_t;
 }
 
-void matar_proceso(struct Proceso *p) { free(p); }
+void matar_proceso(struct Proceso *p) {
+  // Verificamos que el proceso este en estado EJECUTANDO
+  // Si no esta en estado RUNNING, no se puede cambiar a TERMINADO
+  if (p->estado != EJECUTANDO) {
+    printf("El proceso %s no se puede matar porque no esta en estado "
+           "EJECUTANDO\n",
+           p->nombre_proceso);
+    exit(1);
+  } else {
+
+    kill(p->pid, SIGKILL); // Matamos el proceso con la SYSCALL SIGKILL
+    p->estado = TERMINADO;
+    free(p); // Liberamos la memoria asignada al proceso
+    // p->tiempo_retorno = (int)time(NULL) - p->init_time;
+  }
+}
+
+// Pausar un proceso
+void pause_process(pid_t pid) { kill(pid, SIGSTOP); }
+
+// Reanudar un proceso
+void resume_process(pid_t pid) { kill(pid, SIGCONT); }
 
 void print_process(struct Proceso *p) {
   printf("Nombre: %s\n", p->nombre_proceso);
