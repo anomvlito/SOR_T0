@@ -24,31 +24,48 @@ void encolar(struct queue *q, struct process *p) {
   }
 }
 
-void ejecutar_queue(struct queue *q) {
-  while (q->size > 0) {
+void encolar_si_necesario(struct queue *q, struct process *p) {
+  if (p->estado != TERMINADO) {
+    encolar(q, p);
+  } else {
+    // nota si el proceso ya termino no se agrega a la cola ojo, con lo que
+    // pueda pasar con los hijos
+    matar_proceso(p);
+    free(p);
+    q->size--;
+  }
+}
 
-    // Obtener el primer proceso de la cola
+void ejecutar_queue(struct queue *q, bool *shell_abierta) {
+  while (*shell_abierta && q->size > 0) {
     struct process *p = q->head;
 
-    // Reanudar el proceso
-    resume_process(p->pid);
+    // Verificar el estado del proceso antes de reanudarlo
+    if (p->estado == ESPERANDO) {
+      resume_process(p->pid);
+      p->estado = EJECUTANDO;
+    }
 
     // Esperar el tiempo asignado
     usleep(tiempo_de_espera);
 
     // Pausar el proceso
     pause_process(p->pid);
+    p->estado = ESPERANDO;
 
     // Verificar si el proceso terminó
     int status;
     pid_t result = waitpid(p->pid, &status, WNOHANG);
     if (result == 0) {
       // Si no ha terminado, reenviarlo al final de la cola
-      encolar(q, p);
+      q->head = p->next; // Avanzar al siguiente en la cola
+      encolar_si_necesario(q, p);
     } else if (result == p->pid) {
-      // Si terminó, liberar recursos
-      matar_proceso(p);
-      // free(p);
+      // Si terminó, eliminarlo de la cola
+      q->head = p->next; // Avanzar al siguiente en la cola
+      matar_proceso(p);  // Liberar recursos del proceso
+      free(p);           // Liberar la memoria del proceso
+      q->size--;         // Reducir el tamaño de la cola
     }
   }
 }
