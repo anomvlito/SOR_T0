@@ -1,33 +1,23 @@
-#include <stdlib.h>
-#include <sys/types.h>
-
-// define el estado del proceso
-// status_t es un tipo de dato que puede tomar 4 valores
-// 0 se interpretara como RUNNING
-// 1 se interpretara como READY
-// 2 se interpretara como WAITING
-// 3 se interpretara como FINISHED
+#ifndef PROCESO_H
+#define PROCESO_H
 
 typedef enum { EJECUTANDO, LISTO, ESPERANDO, TERMINADO } status_t;
 
 struct process {
-  char nombre_proceso[32];
-  pid_t pid;
+  int pid;
+  char nombre[256];
   status_t estado;
-  int tiempo_inicio;
-  int iniciar_tiempo_espera;
-  int tiempo_retorno;
-  struct process *proceso_padre;
-  struct process *procesos_hijos;
-  struct process *siguiente_hermano;
-} Process;
+  struct process *padre;
+  struct process *primer_hijo;
+  struct process *hermano;
+};
 
-void crear_proceso(struct Process *p, char *nombre_proceso, status_t estado,
-                   int tiempo_inicio, int iniciar_tiempo_espera,
-                   int tiempo_retorno, struct Process *procesos_hijos,
-                   struct Process *proceso_padre,
-                   struct Process *siguiente_hermano);
+typedef struct process Process;
 
-void matar_proceso(struct Proceso *p);
+void crear_proceso(Process *p, char *nombre_proceso, status_t estado, int pid,
+                   int ppid, int prioridad, Process *padre,
+                   Process *primer_hijo, Process *hermano);
+void matar_proceso(Process *p);
+void print_process(Process *p);
 
-void print_process(struct Proceso *p);
+#endif // PROCESO_H

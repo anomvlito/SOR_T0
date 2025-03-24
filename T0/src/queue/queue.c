@@ -36,9 +36,16 @@ void encolar_si_necesario(struct queue *q, struct process *p) {
   }
 }
 
-void ejecutar_queue(struct queue *q, bool *shell_abierta) {
+void empezar_a_manejar_queue(struct queue *q, bool *shell_abierta) {
+
   while (*shell_abierta && q->size > 0) {
+
     struct process *p = q->head;
+
+    if (q->head == NULL) { // Si la cola esta vacia se salta la ejecucion hasta
+                           // que llegue un proceso
+      continue;
+    }
 
     // Verificar el estado del proceso antes de reanudarlo
     if (p->estado == ESPERANDO) {
@@ -71,3 +78,9 @@ void ejecutar_queue(struct queue *q, bool *shell_abierta) {
 }
 
 void liberar_queue(struct queue *q) { free(q); }
+
+// // Pausar un proceso
+// void pause_process(pid_t pid) { kill(pid, SIGSTOP); }
+
+// // Reanudar un proceso
+// void resume_process(pid_t pid) { kill(pid, SIGCONT); }

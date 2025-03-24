@@ -13,12 +13,23 @@ int main(int argc, char const *argv[]) {
 
   /* Construcción de las estructuras */
 
-  while (algo != NULL) {
+  bool shell_abierta = true;
 
+  // Inicializar la cola de procesos
+  struct queue *cola = crear_queue();
+
+  while (shell_abierta) {
+
+    printf("lrsh> ");
     char **input = read_user_input();
 
+    if (input[0] == NULL) {
+      free_user_input(input);
+      continue;
+    }
+
     if (string_equals(input[0], "hello")) {
-      hello();
+      hello(cola);
     }
 
     else if (string_equals(input[0], "sum")) {

@@ -1,6 +1,8 @@
-// Tells the compiler to compile this file once
 #pragma once
-// Import used global libraries
+#ifndef MANAGER_H
+#define MANAGER_H
+
+#include "../proceso/proceso.h"
 #include <stdbool.h>
 #include <stdio.h>  // FILE, fopen, fclose, etc.
 #include <stdlib.h> // malloc, calloc, free, etc.
@@ -23,4 +25,6 @@ char **read_user_input();
 void free_user_input(char **input);
 void hello();
 void isPrime(char *input);
-void lrlist(struct process *process_list);
+// void lrlist(struct process *process_list);
+
+#endif // MANAGER_H

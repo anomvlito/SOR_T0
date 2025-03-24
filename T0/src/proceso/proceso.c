@@ -3,20 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-void crear_proceso(struct Proceso *p, char *nombre_proceso, status_t estado,
-                   int tiempo_inicio, int iniciar_tiempo_espera,
-                   int tiempo_retorno, struct Proceso *procesos_hijos,
-                   struct Proceso *proceso_padre,
-                   struct Proceso *siguiente_hermano) {
+void crear_proceso(struct Proceso *p, int pid, char *nombre_proceso,
+                   status_t estado, struct Proceso *padre,
+                   struct Proceso *primer_hijo, struct Proceso *hermano) {
 
-  strcpy(p->nombre_proceso, nombre_proceso);
-  p->estado = EJECUTANDO;
-  p->tiempo_inicio = tiempo_inicio;
-  p->iniciar_tiempo_espera = iniciar_tiempo_espera;
-  p->tiempo_retorno = tiempo_retorno;
-  p->procesos_hijos = procesos_hijos;
-  p->proceso_padre = proceso_padre;
-  p->siguiente_hermano = siguiente_hermano;
+  p->pid = pid;
+  strcpy(p->nombre, nombre_proceso);
+  p->estado = estado;
+  p->padre = padre;
+  p->primer_hijo = primer_hijo;
+  p->hermano = hermano;
 }
 
 void esperar_proceso(struct Proceso *p, double actual_time) {
@@ -33,8 +29,8 @@ void esperar_proceso(struct Proceso *p, double actual_time) {
     // asignada al proceso
     kill(p->pid, SIGSTOP);
     p->estado = ESPERANDO;
-    p->iniciar_tiempo_espera = actual_time;
-    p->init_time = (int)actual_time;
+    // p->iniciar_tiempo_espera = actual_time;
+    // p->init_time = (int)actual_time;
   }
 
   // typedef enum { EJECUTANDO, LISTO, ESPERANDO, TERMINADO } status_t;
@@ -52,8 +48,9 @@ void matar_proceso(struct Proceso *p) {
 
     kill(p->pid, SIGKILL); // Matamos el proceso con la SYSCALL SIGKILL
     p->estado = TERMINADO;
-    free(p); // Liberamos la memoria asignada al proceso
-    // p->tiempo_retorno = (int)time(NULL) - p->init_time;
+    free(p); // Liberamos la memoria asignada al proceso, OJOO QUIZAS SEA BUENO
+             // NO LIBERAR LA MEMORIA ACA
+    // Y LIBERARLA EN QUEUE, ejecutar_queu
   }
 }
 
@@ -64,10 +61,6 @@ void pause_process(pid_t pid) { kill(pid, SIGSTOP); }
 void resume_process(pid_t pid) { kill(pid, SIGCONT); }
 
 void print_process(struct Proceso *p) {
-  printf("Nombre: %s\n", p->nombre_proceso);
-  printf("Estado: %d\n", p->estado);
-  printf("Tiempo de inicio: %d\n", p->tiempo_inicio);
-  printf("Tiempo de espera: %d\n", p->iniciar_tiempo_espera);
-  printf("Tiempo de retorno: %d\n", p->tiempo_retorno);
-  printf("\n");
+  printf("PID: %d\nNombre: %s\nEstado: %d\n\n", p->pid, p->nombre_proceso,
+         p->estado);
 }

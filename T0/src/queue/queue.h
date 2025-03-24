@@ -1,10 +1,12 @@
+#ifndef QUEUE_H
+#define QUEUE_H
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "../input_manager/manager.h"
 #include "../proceso/proceso.h"
 
-#define tiempo_de_espera 1000000 // 1 segundo en microsegundos
+#define tiempo_de_espera 1000000 // 1 segundo, en microsegundos
 
 // definimos un queue de procesos que se comporte como fifo pero le asigne un
 // tiempo determinado al proceso cada vez que llegue a la cola el tiempo de
@@ -22,6 +24,8 @@ struct queue {
 // aca van las declaraciones de las funciones de queue.c
 void encolar(struct queue *q, struct process *p);
 
-void ejecutar_queue(struct queue *q);
+void empezar_a_manejar_queue(struct queue *q, bool *shell_abierta);
 
 void liberar_queue(struct queue *q);
+
+#endif // QUEUE_H

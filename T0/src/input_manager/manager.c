@@ -1,5 +1,10 @@
 #include "manager.h"
-#include "proceso.h"
+#include "../proceso/proceso.h"
+#include "../queue/queue.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 /*
  * Splits a string "str" by a separator "sep", returns an array with the
@@ -46,18 +51,22 @@ void free_user_input(char **input) {
   free(input);
 }
 
-void hello() {
-  // https://www.geeksforgeeks.org/fork-system-call/
+void hello(struct queue *cola) {
   pid_t pid = fork();
+
   if (pid < 0) {
     perror("fork fail");
     exit(1);
   } else if (pid == 0) {
     printf("Hello World!\n");
+    exit(0);
+  } else {
+    Process *nuevo_proceso = calloc(1, sizeof(Process));
+    crear_proceso(nuevo_proceso, "hello", EJECUTANDO, time(NULL), 0, 0, NULL,
+                  NULL, NULL);
+    nuevo_proceso->pid = pid;
+    encolar(cola, nuevo_proceso);
   }
-  // else {
-  //   printf("Hello World p0!\n");
-  // }
 }
 
 // https://www.geeksforgeeks.org/c-program-to-check-whether-a-number-is-prime-or-not/
@@ -65,28 +74,35 @@ void isPrime(char *input) {
   pid_t pid = fork();
 
   if (pid == 0) {
-    // If number is less than or equal to 1, it is not prime
     int N = atoi(input);
     bool result = true;
+
     if (N <= 1) {
       result = false;
     }
 
-    // Check for divisors from 2 to N/2
-    for (int i = 2; i < N / 2; i++) {
-      // If N is divisible by any number in this range, it
-      // is not prime
+    for (int i = 2; i <= N / 2; i++) {
       if (N % i == 0) {
         result = false;
+        break;
       }
     }
-    // If no divisors are found, it is prime
-    if (result == true) {
+
+    if (result) {
       printf("%s is prime\n", input);
     } else {
       printf("%s is not prime\n", input);
     }
-  } else
+
+    exit(0); // Asegúrate de que el proceso hijo termine
+  } else if (pid > 0) {
+    // Este es el proceso padre, podrías querer esperar aquí
+    wait(NULL);
+  } else {
+    // Si el fork falla
+    perror("fork failed");
+    exit(1);
+  }
 }
 
 // comentario de discussions :
@@ -99,28 +115,28 @@ void isPrime(char *input) {
 // struct del queue de la cola con prioiridad, y que se vayan agregando a la
 // lista de procesos en ejecución algunos procesos van a tomar más de 1 segundo.
 
-void lrlist(struct process *process_list) {
-  struct process *current = process_list;
+// void lrlist(struct process *process_list) {
+//   struct process *current = process_list;
 
-  while (current != NULL) {
-    // Imprimir información del proceso actual
-    // se entrega un operador ternario para imprimir el estado del proceso
-    printf("PID del proceso es: %d\n Nombre: %s \n Tiempo de ejecución: %ld "
-           "segundos \n Estado: %s\n",
-           current->pid, current->nombre_proceso,
-           time(NULL) - current->tiempo_inicio,
-           current->estado == FINISHED ? "Terminado" : "En ejecución")
+//   while (current != NULL) {
+//     // Imprimir información del proceso actual
+//     // se entrega un operador ternario para imprimir el estado del proceso
+//     printf("PID del proceso es: %d\n Nombre: %s \n Tiempo de ejecución: %ld "
+//            "segundos \n Estado: %s\n",
+//            current->pid, current->nombre_proceso,
+//            time(NULL) - current->tiempo_inicio,
+//            current->estado == FINISHED ? "Terminado" : "En ejecución")
 
-        // Si el proceso actual tiene hijos, llamamos  con cuidado
-        // recursivamente a lrlist para ir recorriendo a sus hijos
-        if (current->primer_hijo != NULL) {
-      lrlist(current->primer_hijo);
-    }
+//         // Si el proceso actual tiene hijos, llamamos  con cuidado
+//         // recursivamente a lrlist para ir recorriendo a sus hijos
+//         if (current->primer_hijo != NULL) {
+//       lrlist(current->primer_hijo);
+//     }
 
-    // Pasar al siguiente proceso en el mismo nivel
-    current = current->siguiente_hermano;
-  }
-}
+//     // Pasar al siguiente proceso en el mismo nivel
+//     current = current->siguiente_hermano;
+//   }
+// }
 
 // cuando id de fork es -1 es porque no se pudo crear el proceso hijo
 // cuando id de fork es 0 es porque es el proceso hijo
